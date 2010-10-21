@@ -42,7 +42,7 @@ sub create_PDF_images { # create a page with the docs in it.
 	use File::Temp;
 	use Digest::MD5 qw/md5_hex/;
 	#return &ask_for_pdf unless ($Passed_Values{'url'}=~ m#\.pdf$#i); #
-	my $pdf= get ($Passed_Values{"url"} ) || return &ask_for_pdf();
+	my $pdf= get ($Passed_Values{"url"} ) || return &ask_for_pdf('fetch failed');
 	my $hashname= md5_hex($pdf);
 	my $name= "$basedir/$hashname" ;
 	mkdir $name || die "can't mkdir $name: $!";
@@ -52,7 +52,7 @@ sub create_PDF_images { # create a page with the docs in it.
 
 	chdir($name);
 	unless (-e "$name/output.jpg" or -e "$name/output-0.jpg") {
-		`pdftohtml -xml $name/original.pdf $name/output`;
+		`/usr/local/bin/pdftohtml -xml -stdout  $name/original.pdf | /usr/local/bin/xmllint --recover - > $name/output.xml`;
 		my $head= `head $name/output.xml`;
 		my ($width)= $head=~ m#width="(\d+)"#;
 		my ($height)= $head=~ m#height="(\d+)"#;
@@ -104,7 +104,7 @@ Content-Type: text/html\n\n
 <div class="submitbox">
 	Submit for processing: <input type="submit" value="Submit" />
 </div>
-<p><br /></p><p><a href="./pdf2xls?action=step1;sleep=25;url=$Passed_Values{'url'}">if nothing here, click to reload since processing may take a while on large pdfs</a></p>
+<p><br /></p><p><a href="./pdf2xls.pl?action=step1;sleep=25;url=$Passed_Values{'url'}">if nothing here, click to reload since processing may take a while on large pdfs</a></p>
 <h2>Draw boxes over the tables</h2>
 
 	<input type="hidden" name="action" value="step2" />
@@ -167,17 +167,21 @@ sub chop_and_make_excel {
 
 	&ask_for_pdf if $Passed_Values{'code'}=~ m#[^0-9A-Z]#i; 
 
-	my $xml_file= XMLin("$basedir/$Passed_Values{'code'}/output.xml", Cache => 'Storable');
+	my $xml_file= XMLin("$basedir/$Passed_Values{'code'}/output.xml", Cache => 'Storable', ForceArray => 1);
 	my ($x1, $x2, $y1, $y2);
 
 	#use Data::Dumper;
 	#print "Content-Type: text/plain\n\n".  Dumper $xml_file;
-	my $max_page= $xml_file->{'page'}->[-1]->{'number'} -1;
+	my $max_page = 1;
+	if (ref($xml_file->{'page'}) eq 'ARRAY') {
+		$max_page= $xml_file->{'page'}->[-1]->{'number'} -1;
+	}
 
 	my $width_factor= 20; #min width of column before they get merged together. 20px
 	my $colinfo;
 	my $workbook  = Spreadsheet::WriteExcel->new("$basedir/$Passed_Values{'code'}/output.xls");
-
+#print "Content-Type: text/plain\n\n";
+#print  Dumper $xml_file;
 	my %colmapping;
 	my $rowcount;
 	foreach my $pageno (0 .. $max_page) { 
@@ -247,7 +251,7 @@ sub chop_and_make_excel {
 
 			my $column=$colmapping{int($textblock->{'left'} / $width_factor)};
 			my $content='';
-
+			my $format=undef; 
 			if (defined $textblock->{'content'}) { 
 				$content= $textblock->{'content'};
 			} else {
@@ -257,15 +261,25 @@ sub chop_and_make_excel {
 				foreach my $k (qw/width left top content height font/) {
 					$skipkeys{$k}=1;
 				}
+				$format = $workbook->add_format(); # Add a format
+				$format->set_align('center');
 				foreach my $key (keys %$textblock) {
 					next if defined $skipkeys{$key};
 					$content= $textblock->{$key}; #->{'value'}
+
+					if ($key =~ m#^b%#i) { $format->set_bold(); }
+					if ($key =~ m#^i%#i) { $format->set_italic(); }
+
+					if (ref($content)) {
+						$content= $textblock->{$key}->{$content} 
+						# need an alt approach if we find 3 levels of hierarchy: <font><b><i>
+					}
 				}
 				# TODO  need to find the unusual key in the hash, and drill down to find the value of it, possibly multiple levels
 				#    possibly set a format on the string to carry some formatting onwards (headers as bold etc)
 
 			}
-			if (defined $content) { $worksheet->write($rowcount, $column, $content); }
+			if (defined $content) { $worksheet->write($rowcount, $column, $content, $format); }
 			$worksheet->write_comment($rowcount, $column, to_json($textblock, {utf8 => 1}));
 
 		}
@@ -277,7 +291,11 @@ sub chop_and_make_excel {
 }
 
 sub ask_for_pdf {
+	my $warning= shift;
 
+	if (defined $warning) {
+		$warning= "<div class=\"bigredbox\">$warning</div>";
+	}
 print "Content-Type: text/html\n\n";
 print <<EOhtml;
 
