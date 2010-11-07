@@ -320,6 +320,9 @@ testing links:
 </ul>
 
 For programmers:
+	<li>Please don't hit this install with automated scrapers yet. If you want to do that, put it on your own site</li>
+	<li>This is also suitable for glueing into a crowdsource thing.</li>
+	<li><a href="https://github.com/samsmith/pdf2excel">Source code</a></li>
 	<li>json of the raw parse is dumped into all the excel comment fields where there's stuff in the text - you can just ignore the actual content
 	<li>if you're careful, you can, possibly, try getting with a full size bounding box for page 0 and it might work (for some PDFs), which means you can automate this in 2 get requests. We'll work on this simple. The code you get back is the MD5 hex checksum of the pdf you ask it for.
 	<li>It requires the pdftohtml to be in /usr/local/bin (the one with the -xml option - pdf<i>2</i>html wont do), and the following perl modules:
@@ -330,10 +333,11 @@ For programmers:
         	<li>use XML::Simple;
         	<li>use JSON qw/to_json/;
         	<li>use Spreadsheet::WriteExcel;</li></ul></li>
-	<li>Please don't hit this script with automated scrapers yet. If that, put it on your own site</li>
-	<li>This is also suitable for glueing into a crowdsource thing.</li>
 
-
+</ul>
+<p>You may want to sign up for notifications from the <a href="http://www.linkedgov.org/">LinkedGov project</a>.</p>
+<p />
+<a href="http://www.mysociety.org/"><img border="0" src="http://services.disruptiveproactivity.com/images/hostedbymysociety.png"></a>
 EOhtml
 
 
