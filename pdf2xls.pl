@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# license, BSD
+# license, BSD.  written by s@msmith.net
 
 # needs convert from imagemagick in the path
 
@@ -335,7 +335,7 @@ For programmers:
         	<li>use Spreadsheet::WriteExcel;</li></ul></li>
 
 </ul>
-<p>If you like this, you may want to sign up for notifications from the <a href="http://www.linkedgov.org/">LinkedGov project</a> run by friends .</p>
+<p>If you like this, you may want to sign up for notifications from the <a href="http://www.linkedgov.org/">LinkedGov project</a> run by friends .</p>. 
 <p />
 <a href="http://www.mysociety.org/"><img border="0" src="http://services.disruptiveproactivity.com/images/hostedbymysociety.png"></a>
 EOhtml
