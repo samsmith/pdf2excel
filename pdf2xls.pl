@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+# license, BSD
+
 # needs convert from imagemagick in the path
 
 use warnings;
@@ -271,8 +273,7 @@ sub chop_and_make_excel {
 					if ($key =~ m#^i%#i) { $format->set_italic(); }
 
 					if (ref($content)) {
-						$content= $textblock->{$key}->{$content} 
-						# need an alt approach if we find 3 levels of hierarchy: <font><b><i>
+						# need an alt approach if we find 2 or more levels of hierarchy: <font><b><i>
 					}
 				}
 				# TODO  need to find the unusual key in the hash, and drill down to find the value of it, possibly multiple levels
@@ -329,7 +330,10 @@ For programmers:
         	<li>use XML::Simple;
         	<li>use JSON qw/to_json/;
         	<li>use Spreadsheet::WriteExcel;</li></ul></li>
-	<li>Please don't hit this script with automated scrapers yet. At some point soon, I'll stick it on github so you can run it yourself once I'm happy it's actually substantially ok and passes the minimum stuff you need it to pass (at the moment, it has a couple of major missing bits).</li>
+	<li>Please don't hit this script with automated scrapers yet. If that, put it on your own site</li>
+	<li>This is also suitable for glueing into a crowdsource thing.</li>
+
+
 EOhtml
 
 
