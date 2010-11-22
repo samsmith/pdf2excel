@@ -320,6 +320,7 @@ testing links:
 </ul>
 
 For programmers:
+	<li><a href="http://www.disruptiveproactivity.com/2010/11/pdfs-technical-improvement/">Blog post intro</a></li>
 	<li>Please don't hit this install with automated scrapers yet. If you want to do that, put it on your own site</li>
 	<li>This is also suitable for glueing into a crowdsource thing.</li>
 	<li><a href="https://github.com/samsmith/pdf2excel">Source code</a></li>
