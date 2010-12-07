@@ -19,7 +19,6 @@ use CGI qw/param/;
 	}
 
 	if (defined $Passed_Values{'action'}) {
-
 		# do somethign
 		if (defined $Passed_Values{'sleep'}) {
 			sleep($Passed_Values{'sleep'});
@@ -186,7 +185,8 @@ sub chop_and_make_excel {
 #print  Dumper $xml_file;
 	my %colmapping;
 	my $rowcount;
-	foreach my $pageno (0 .. $max_page) { 
+	my $first_page= $Passed_Values{'first_page'} || 0;
+	foreach my $pageno ($first_page .. $max_page) { 
 		# get bounding box (or cached values from last pass) or skip
 		if (defined $Passed_Values{"image_${pageno}_boxdrawn"}  and $Passed_Values{"image_${pageno}_boxdrawn"}  ne '' ) {
 			$x1= $Passed_Values{"image_${pageno}_x1"};
@@ -280,7 +280,7 @@ sub chop_and_make_excel {
 				#    possibly set a format on the string to carry some formatting onwards (headers as bold etc)
 
 			}
-			if (defined $content) { $worksheet->write($rowcount, $column, $content, $format); }
+			if (defined $content) { $worksheet->write($rowcount, $column, ' ' . $content, $format); }
 			$worksheet->write_comment($rowcount, $column, to_json($textblock, {utf8 => 1}));
 
 		}
